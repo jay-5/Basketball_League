@@ -1,0 +1,119 @@
+CREATE TYPE player_position AS ENUM('PG','SG','SF','PF','C','UNKNOWN');
+create type roster_status as enum('Active, IR, FA');
+
+create table Team(
+	T_ID int not null unique,
+	T_Name varchar(30) not null,
+	Location varchar(30) not null,
+	Record int not null,
+	Manager_ID int not null unique,
+	Coach_ID int not null unique,
+	Primary Key(T_ID)
+);
+
+create table Coach(
+	C_ID int not null,
+	C_Name varchar(30) not null,
+	Record int not null,
+	Salary int not null,
+	Primary Key(C_ID),
+	Foreign Key(C_ID) references Team(Coach_ID)
+);
+
+create table Manager(
+	M_ID int not null,
+	M_Name varchar(30) not null,
+	Record int not null,
+	Salary int not null,
+	Primary Key(M_ID),
+	Foreign Key(M_ID) references Team(Manager_ID)
+);
+
+create table Player(
+	Player_ID int not null,
+	Player_Name varchar(30) not null,
+	Current_position player_position,
+	Salary int not null,
+	Roster_Status roster_status,
+	Team_ID int,
+	Primary Key(Player_ID),
+	Foreign Key(Team_ID) references Team(T_ID)
+);
+
+create table Game(
+	G_ID int not null,
+	Date date not null,
+	Time timestamp not null,
+	Home_Team_ID int not null,
+	Away_Team_ID int not null,
+	Result varchar(12) not null,
+	Primary Key(G_ID),
+	Foreign Key(Home_Team_ID) references Team(T_ID),
+	Foreign Key(Away_Team_ID) references Team(T_ID)
+);
+
+create table Season(
+	Season_ID int not null unique,
+	Year int not null,
+	Primary Key(Season_ID)
+);
+
+create table Team_Stats(
+	Team_ID int not null unique,
+	PPG float not null,
+	APG float not null,
+	BPG float not null,
+	TPG float not null,
+	SPG float not null,
+	RPG float not null,
+	FGP float not null,
+	TPFGP float not null,
+	Primary Key(Team_ID),
+	Foreign Key(Team_ID) references Team(T_ID)
+);
+
+create table Player_Stats(
+	Player_ID int not null unique,
+	PPG float not null,
+	APG float not null,
+	BPG float not null,
+	SPG float not null,
+	RPG float not null,
+	FGP float not null,
+	TPFGP float not null,
+	MPG float not null,
+	PER float not null,
+	Primary Key(Player_ID),
+	Foreign Key(Player_ID) references Player(Player_ID)
+);
+
+create table Team_Total(
+	Team_ID int not null unique,
+	Game_ID int not null,
+	Points INT NOT NULL,
+	Assists INT NOT NULL,
+	Rebounds INT NOT NULL,
+	Steals INT NOT NULL,
+	Minutes INT NOT NULL,
+	Turnovers INT NOT NULL,
+	PRIMARY KEY (Team_ID),
+	FOREIGN KEY (Team_ID) REFERENCES Team(T_ID),
+	Foreign key (Game_ID) References Game(G_ID)
+);
+
+create table Player_Total(
+  Points INT NOT NULL,
+  Assists INT NOT NULL,
+  Rebounds INT NOT NULL,
+  Steals INT NOT NULL,
+  Minutes INT NOT NULL,
+  Turnovers INT NOT NULL,
+  Player_ID INT NOT NULL,
+  G_ID INT NOT NULL,
+  PRIMARY KEY (Player_ID),
+  FOREIGN KEY (G_ID) REFERENCES Game(G_ID),
+  Foreign key (Player_ID) References Player(Player_ID)
+);
+
+
+
